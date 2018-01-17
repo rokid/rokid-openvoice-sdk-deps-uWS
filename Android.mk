@@ -17,7 +17,7 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/src \
 	external/zlib
 LOCAL_SHARED_LIBRARIES := libssl libcrypto libz
-LOCAL_CPPFLAGS := -std=c++11 -fexceptions
+LOCAL_CPPFLAGS := -std=c++11 -fexceptions -DUWS_THREADSAFE
 ifeq ($(PLATFORM_SDK_VERSION), 23)
 LOCAL_CXX_STL := libc++
 LOCAL_C_INCLUDES += external/boringssl/include

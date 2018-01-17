@@ -16,7 +16,7 @@ LOCAL_SRC_FILES := \
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/src
 LOCAL_LDLIBS := -lz
-LOCAL_CPPFLAGS := -std=c++11 -fexceptions
+LOCAL_CPPFLAGS := -std=c++11 -fexceptions -DUWS_THREADSAFE
 ifeq ($(PLATFORM_SDK_VERSION), 23)
 LOCAL_C_INCLUDES += $(DEPS_DIR)/boringssl/include
 LOCAL_LDLIBS += -L$(DEPS_DIR)/boringssl/libs -lssl -lcrypto
