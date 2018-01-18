@@ -204,7 +204,7 @@ struct HttpResponse {
 
             static size_t transform(const char *src, char *dst, size_t length, TransformData transformData) {
                 // todo: sprintf is extremely slow
-                int offset = transformData.hasHead ? 0 : std::sprintf(dst, "HTTP/1.1 200 OK\r\nContent-Length: %u\r\n\r\n", (unsigned int) length);
+                int offset = transformData.hasHead ? 0 : sprintf(dst, "HTTP/1.1 200 OK\r\nContent-Length: %u\r\n\r\n", (unsigned int) length);
                 memcpy(dst + offset, src, length);
                 return length + offset;
             }
