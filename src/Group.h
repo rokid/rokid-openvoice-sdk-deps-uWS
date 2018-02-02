@@ -49,6 +49,7 @@ protected:
     // todo: cannot be named user, collides with parent!
     void *userData = nullptr;
     static void timerCallback(Timer *timer);
+    static void dummyCallback(Timer *timer);
 
     WebSocket<isServer> *webSocketHead = nullptr;
     HttpSocket<isServer> *httpSocketHead = nullptr;
@@ -87,6 +88,9 @@ public:
     void terminate();
     void close(int code = 1000, char *message = nullptr, size_t length = 0);
     void startAutoPing(int intervalMs, std::string userMessage = "");
+    // workaround for loop not quit when server no response
+    // if has timer, epoll_wait will awake periodic
+    void setTimer(int intervalMs);
 
     // same as listen(TRANSFERS), backwards compatible API for now
     void addAsync() {

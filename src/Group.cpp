@@ -41,6 +41,16 @@ void Group<isServer>::startAutoPing(int intervalMs, std::string userMessage) {
 }
 
 template <bool isServer>
+void Group<isServer>::dummyCallback(Timer *timer) {
+}
+
+template <bool isServer>
+void Group<isServer>::setTimer(int intervalMs) {
+    timer = new Timer(loop);
+    timer->start(dummyCallback, intervalMs, intervalMs);
+}
+
+template <bool isServer>
 void Group<isServer>::addHttpSocket(HttpSocket<isServer> *httpSocket) {
     if (httpSocketHead) {
         httpSocketHead->prev = httpSocket;
