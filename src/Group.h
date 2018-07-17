@@ -43,6 +43,8 @@ protected:
     Hub *hub;
     int extensionOptions;
     Timer *timer = nullptr, *httpTimer = nullptr;
+	// fix a stupid bug
+	Timer *stupidTimer = nullptr;
     std::string userPingMessage;
     std::stack<Poll *> iterators;
 
@@ -91,6 +93,7 @@ public:
     // workaround for loop not quit when server no response
     // if has timer, epoll_wait will awake periodic
     void setTimer(int intervalMs);
+    void clearTimer();
 
     // same as listen(TRANSFERS), backwards compatible API for now
     void addAsync() {

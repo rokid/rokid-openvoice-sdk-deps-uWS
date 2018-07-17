@@ -103,7 +103,17 @@ struct Context {
         uv_os_sock_t acceptedFd;
 #if defined(SOCK_CLOEXEC) && defined(SOCK_NONBLOCK)
         // Linux, FreeBSD
+    #ifdef __ANDROID__
+        #if PLATFORM_SDK_VERSION <= 19
+            acceptedFd = accept(fd, nullptr, nullptr);
+            fcntl(fd,F_SETFL,SOCK_CLOEXEC | SOCK_NONBLOCK);
+        #else
+            acceptedFd = accept4(fd, nullptr, nullptr, SOCK_CLOEXEC | SOCK_NONBLOCK);
+        #endif
+    #else
         acceptedFd = accept4(fd, nullptr, nullptr, SOCK_CLOEXEC | SOCK_NONBLOCK);
+    #endif
+   
 #else
         // Windows, OS X
         acceptedFd = accept(fd, nullptr, nullptr);

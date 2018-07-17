@@ -46,8 +46,19 @@ void Group<isServer>::dummyCallback(Timer *timer) {
 
 template <bool isServer>
 void Group<isServer>::setTimer(int intervalMs) {
-    timer = new Timer(loop);
-    timer->start(dummyCallback, intervalMs, intervalMs);
+	if (stupidTimer == nullptr) {
+		stupidTimer = new Timer(loop);
+		stupidTimer->start(dummyCallback, intervalMs, intervalMs);
+	}
+}
+
+template <bool isServer>
+void Group<isServer>::clearTimer() {
+	if (stupidTimer) {
+		stupidTimer->stop();
+		stupidTimer->close();
+		stupidTimer = nullptr;
+	}
 }
 
 template <bool isServer>
