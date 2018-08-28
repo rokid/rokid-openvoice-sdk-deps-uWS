@@ -11,6 +11,11 @@ findPackage(openssl REQUIRED
 	HEADERS openssl/ssl.h
 	SHARED_LIBS crypto ssl
 )
+findPackage(zlib REQUIRED
+	HINTS ${ZlibPrefix}
+	HEADERS zlib.h
+	SHARED_LIBS z
+)
 
 set(CMAKE_C_FLAGS "-pthread -fPIC")
 set(CMAKE_CXX_FLAGS "-std=c++11")
@@ -40,10 +45,12 @@ add_library(uWS SHARED
 )
 target_include_directories(uWS PRIVATE
 	${openssl_INCLUDE_DIRS}
+	${zlib_INCLUDE_DIRS}
 	src
 )
 target_link_libraries(uWS
 	${openssl_LIBRARIES}
+	${zlib_LIBRARIES}
 )
 
 # install include files.
