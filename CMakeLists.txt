@@ -6,10 +6,16 @@ include (${CUSTOM_CMAKE_MODULES}/common.mk)
 
 option(BUILD_DEBUG "debug or release" OFF)
 
+if(ANDROID) 
+	set(ssl_find_args STATIC_LIBS ssl crypto)
+else()
+	set(ssl_find_args SHARED_LIBS ssl crypto)
+endif()
+
 findPackage(openssl REQUIRED
 	HINTS ${OpenSSLPrefix}
 	HEADERS openssl/ssl.h
-	SHARED_LIBS crypto ssl
+	${ssl_find_args}
 )
 findPackage(zlib REQUIRED
 	HINTS ${ZlibPrefix}
@@ -25,8 +31,11 @@ if (BUILD_DEBUG)
 else()
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
-	set(CMAKE_SHARED_LINKER_FLAGS "-s")
-	set(CMAKE_EXE_LINKER_FLAGS "-s")
+
+	if(NOT ANDROID)
+		set(CMAKE_SHARED_LINKER_FLAGS "-s")
+		set(CMAKE_EXE_LINKER_FLAGS "-s")
+	endif()
 endif()
 # workaround for g++ threading bug
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-as-needed")
