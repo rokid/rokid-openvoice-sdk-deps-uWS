@@ -31,11 +31,6 @@ if (BUILD_DEBUG)
 else()
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
-
-	if(NOT ANDROID)
-		set(CMAKE_SHARED_LINKER_FLAGS "-s")
-		set(CMAKE_EXE_LINKER_FLAGS "-s")
-	endif()
 endif()
 # workaround for g++ threading bug
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-as-needed")
