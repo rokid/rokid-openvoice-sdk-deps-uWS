@@ -12,10 +12,12 @@ Configuration:
     --prefix=PREFIX             install prefix
     --cmake-modules=DIR         directory of cmake modules file exist
     --find-root-path=DIR        root dir for search dependencies libs
+    --use-libuv                 use libuv
 
 Dependencies:
     --openssl=DIR               specify openssl install dir
     --zlib=DIR                  specify zlib install dir
+    --libuv=DIR                 specify libuv install dir
 
 Cross Compile:
     --toolchain=DIR             toolchain install dir
@@ -51,11 +53,17 @@ do
 		--cmake-modules=*)
 			cmake_modules_dir=$conf_optarg
 			;;
+		--use-libuv)
+			CMAKE_ARGS=(${CMAKE_ARGS[@]} -DUSE_LIBUV=ON)
+			;;
 		--openssl=*)
 			CMAKE_ARGS=(${CMAKE_ARGS[@]} -DOpenSSLPrefix=$conf_optarg)
 			;;
 		--zlib=*)
 			CMAKE_ARGS=(${CMAKE_ARGS[@]} -DZlibPrefix=$conf_optarg)
+			;;
+		--libuv=*)
+			CMAKE_ARGS=(${CMAKE_ARGS[@]} -DLibuvPrefix=$conf_optarg)
 			;;
 		--toolchain=*)
 			CMAKE_ARGS=(${CMAKE_ARGS[@]} -DTOOLCHAIN_HOME=$conf_optarg)
