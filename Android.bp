@@ -1,0 +1,28 @@
+cc_library_shared {
+    name: "libuWS2",
+
+    srcs: [
+        "src/Epoll.cpp",
+        "src/Extensions.cpp",
+        "src/Group.cpp",
+        "src/HTTPSocket.cpp",
+        "src/Hub.cpp",
+        "src/Networking.cpp",
+        "src/Node.cpp",
+        "src/Socket.cpp",
+        "src/WebSocket.cpp",
+    ],
+    shared_libs: [
+        "libssl",
+        "libcrypto",
+        "libz",
+    ],
+    cppflags: [
+        "-std=c++11",
+        "-fexceptions",
+        "-DUWS_THREADSAFE",
+        "-Wno-unused-parameter",
+    ],
+
+    export_include_dirs: ["src"],
+}
