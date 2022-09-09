@@ -1,50 +1,20 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
-project(speechwrapc)
+project(uWS)
 set(VERSION 0.1)
 
-include (${CUSTOM_CMAKE_MODULES}/common.mk)
-
-option(BUILD_DEBUG "debug or release" OFF)
 option(USE_LIBUV "use libuv" OFF)
+option(BUILD_DEMO "build demo" OFF)
 
-if(ANDROID) 
-	set(ssl_find_args STATIC_LIBS ssl crypto)
-else()
-	set(ssl_find_args SHARED_LIBS ssl crypto)
-endif()
-
-findPackage(openssl REQUIRED
-	HINTS ${OpenSSLPrefix}
-	HEADERS openssl/ssl.h
-	${ssl_find_args}
-)
-findPackage(zlib REQUIRED
-	HINTS ${ZlibPrefix}
-	HEADERS zlib.h
-	SHARED_LIBS z
-)
+find_package(OpenSSL REQUIRED)
+find_package(ZLIB REQUIRED)
 if (USE_LIBUV)
-findPackage(libuv REQUIRED
-  HINTS ${LibuvPrefix}
-  HEADERS uv.h
-  SHARED_LIBS uv
-  RPATH
-)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(libuv REQUIRED libuv)
 else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUWS_THREADSAFE")
 endif()
-
-set(CMAKE_C_FLAGS "-pthread -fPIC")
-set(CMAKE_CXX_FLAGS "-std=c++11")
-if (BUILD_DEBUG)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
-else()
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
-endif()
-# workaround for g++ threading bug
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-as-needed")
+find_package(Threads REQUIRED)
+set(CMAKE_CXX_STANDARD 11)
 if (CROSS_COMPILE_CXXFLAGS)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CROSS_COMPILE_CXXFLAGS}")
 endif()
@@ -54,41 +24,49 @@ file(GLOB_RECURSE UWS_SOURCES
 	src/*.cpp
 )
 
-add_library(uWS SHARED
+add_library(uWS
 	${UWS_SOURCES}
 )
 target_include_directories(uWS PRIVATE
-	${openssl_INCLUDE_DIRS}
-	${zlib_INCLUDE_DIRS}
-	${libuv_INCLUDE_DIRS}
-	src
+  ${libuv_INCLUDE_DIRS}
+)
+target_include_directories(uWS INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+  $<INSTALL_INTERFACE:include/uWS>
 )
 target_link_libraries(uWS
-	${openssl_LIBRARIES}
-	${zlib_LIBRARIES}
+  OpenSSL::Crypto
+  OpenSSL::SSL
+  ZLIB::ZLIB
+  Threads::Threads
 	${libuv_LIBRARIES}
 )
+if (NOT BUILD_SHARED_LIBS)
+  set_target_properties(uWS PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
-# install include files.
 file(GLOB UWS_HEADERS
 	src/*.h
 )
-install(FILES ${UWS_HEADERS}
-	DESTINATION include/uWS
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
+set_target_properties(uWS PROPERTIES PUBLIC_HEADER "${UWS_HEADERS}")
 install(TARGETS uWS
+  EXPORT uWS-config
 	LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  PUBLIC_HEADER DESTINATION include/uWS
 )
-
+install(EXPORT uWS-config
+  DESTINATION lib/cmake/uWS
+  NAMESPACE uWS::
+)
 
 # demo: echo server
+if (BUILD_DEMO)
 add_executable(echo examples/echo.cpp)
 target_include_directories(echo PRIVATE
-  src
-  ${openssl_INCLUDE_DIRS}
   ${libuv_INCLUDE_DIRS}
 )
 target_link_libraries(echo
   uWS
 )
+endif(BUILD_DEMO)
